@@ -12,6 +12,9 @@ RoxygenNote: 7.2.3
 URL: https://github.com/mightymetrika/npboottprmFBar
 BugReports: https://github.com/mightymetrika/npboottprmFBar/issues
 Imports: 
+    fGarch,
+    lmPerm,
+    npboottprm,
     restriktor
 Suggests: 
     testthat (>= 3.0.0)
