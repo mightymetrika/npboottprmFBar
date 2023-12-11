@@ -55,9 +55,14 @@ bootFbar <- function (data, formula, grp, constraints, nboot = 1000, conf.level 
     set.seed(seed)
   }
 
-  # Remove NA values if na_rm is TRUE
-  if (na_rm == TRUE){
-    data <- data[stats::complete.cases(data), ]
+  # Extract variable names from the formula
+  vars_in_formula <- all.vars(stats::as.formula(formula))
+
+  # Remove NA values if na_rm is TRUE, but only for the variables in the formula
+  if (na_rm == TRUE) {
+    subset_data <- data[, vars_in_formula, drop = FALSE]
+    complete_cases <- stats::complete.cases(subset_data)
+    data <- data[complete_cases, ]
   }
 
   grp_val <- data[[grp]]
@@ -145,25 +150,32 @@ bootstrap_fbar_sample <- function(data, formula, grp, constraints, grp_val, grp_
     data[sample(nrow(data), size = grp_sizes[g], replace = TRUE), ]
   })
 
+  # Combine bootstrap samples and assign new groups
   bind_boot <- do.call(rbind, bootstrap_samples)
   new_group <- rep(grp_unique, times = sapply(bootstrap_samples, nrow))
   bind_boot[[grp]] <- new_group
 
-  # Use tryCatch to handle potential errors in iht_boot
+  # Run model and use tryCatch to handle potential errors in iht_boot
   iht_boot <- tryCatch({
     restriktor::iht(stats::lm(stats::as.formula(formula), data = bind_boot), constraints = constraints)
   }, error = function(e) {
     return(NULL)
   })
 
+  # Return result
   if (is.null(iht_boot)) {
-    return(list(orig_Ts_B = NA, orig_Ts_A = NA, orig_Ts_F = NA))
+    if (only_equality_constraints) {
+      return(list(bsamp_Ts_F = NA))
+    } else {
+      return(list(bsamp_Ts_B = NA,
+                  bsamp_Ts_A = NA))
+    }
   }
 
   if (only_equality_constraints) {
-    return(list(orig_Ts_F = iht_boot$Ts))
+    return(list(bsamp_Ts_F = iht_boot$Ts))
   } else {
-    return(list(orig_Ts_B = iht_boot$B$Ts,
-                orig_Ts_A = iht_boot$A$Ts))
+    return(list(bsamp_Ts_B = iht_boot$B$Ts,
+                bsamp_Ts_A = iht_boot$A$Ts))
   }
 }
