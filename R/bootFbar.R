@@ -16,13 +16,16 @@
 #' @param na_rm A logical value indicating whether NA values should be removed (default is FALSE).
 #'
 #' @return A list containing the following components:
-#' \itemize{
-#'   \item{pvalueA, pvalueB, pvalueF}{P-values for the different test types.}
-#'   \item{ciA, ciB, ciF}{Confidence intervals for the test statistics.}
-#'   \item{TsA, TsB, TsF}{Bootstrap test statistics.}
-#'   \item{modelo}{The linear model object.}
-#'   \item{ihto}{The initial iht computation result.}
-#' }
+#'
+#'   -pvalueA, pvalueB, pvalueF: P-values for the different test types.
+#'
+#'   -ciA, ciB, ciF: Confidence intervals for the test statistics.
+#'
+#'   -TsA, TsB, TsF: Bootstrap test statistics.
+#'
+#'   -modelo: The linear model object.
+#'
+#'   -ihto: The initial iht computation result.
 #'
 #' @examples
 #' bootFbar(data = iris, formula = Sepal.Length ~ -1 + Species,

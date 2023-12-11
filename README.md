@@ -7,12 +7,19 @@
 <!-- badges: end -->
 
 The goal of ‘npboottprmFBar’ is to implement the nonparametric bootstrap
-test with pooled resampling method, as presented in Dwivedi,
-Mallawaarachchi, and Alvarado (2017), for informative hypothesis
-testing, as implemented in ‘restriktor’ and outlined in Vanbrabant and
-Rosseel (2020).
+test with pooled resampling method (as presented in Dwivedi,
+Mallawaarachchi, and Alvarado (2017)) for informative hypothesis testing
+(as implemented in ‘restriktor’ and outlined in Vanbrabant and Rosseel
+(2020)).
 
 ## Installation
+
+You can install the released version of ‘npboottprmFBar’ from
+[CRAN](https://CRAN.R-project.org):
+
+``` r
+install.packages("npboottprmFBar")
+```
 
 To install the development version of ‘npboottprmFBar’ from GitHub, use
 the [devtools](https://devtools.r-lib.org/) package:

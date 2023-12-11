@@ -36,13 +36,16 @@ a symbolic description of the model to be fitted.}
 }
 \value{
 A list containing the following components:
-\itemize{
-\item{pvalueA, pvalueB, pvalueF}{P-values for the different test types.}
-\item{ciA, ciB, ciF}{Confidence intervals for the test statistics.}
-\item{TsA, TsB, TsF}{Bootstrap test statistics.}
-\item{modelo}{The linear model object.}
-\item{ihto}{The initial iht computation result.}
-}
+
+-pvalueA, pvalueB, pvalueF: P-values for the different test types.
+
+-ciA, ciB, ciF: Confidence intervals for the test statistics.
+
+-TsA, TsB, TsF: Bootstrap test statistics.
+
+-modelo: The linear model object.
+
+-ihto: The initial iht computation result.
 }
 \description{
 Performs a nonparametric bootstrap test with pooled resampling based on the methods
