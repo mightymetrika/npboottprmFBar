@@ -29,7 +29,7 @@ the [devtools](https://devtools.r-lib.org/) package:
 devtools::install_github("mightymetrika/npboottprmFBar")
 ```
 
-## Nonparametric bootstrap t-test
+## An iris example
 
 The following example demonstrates how to use the bootFbar() function to
 conduct an informative hypothesis test.
