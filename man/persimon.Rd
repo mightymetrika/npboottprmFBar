@@ -54,8 +54,9 @@ persimon(
 \item{conf.level}{Confidence level for the tests (default is 0.95).}
 }
 \value{
-A data frame with the proportions of rejecting the null hypothesis for
-each test and sample size combination.
+A list of data frames. One with the proportions of rejecting the null
+hypothesis for each test and sample size combination, and the other with the
+number of models which did not produce errors for each combination.
 }
 \description{
 Simulates performance (Type I Error or Statistical Power) for a range of

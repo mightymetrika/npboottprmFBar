@@ -5,9 +5,11 @@ test_that("persimon works", {
                   n1 = c(6,7), n2 = c(6,7), n3 = c(6,7),
                   n_simulations = 2, nboot = 5, conf.level = 0.95)
 
-
-  expect_equal(nrow(res), 2)
-  expect_equal(ncol(res), 16)
+  expect_equal(length(res), 2)
+  expect_equal(nrow(res$results), 2)
+  expect_equal(ncol(res$results), 16)
+  expect_equal(nrow(res$success), 2)
+  expect_equal(ncol(res$success), 16)
 })
 
 test_that("persimon works with non-null skew", {
@@ -19,6 +21,9 @@ test_that("persimon works with non-null skew", {
                   n_simulations = 2, nboot = 5, conf.level = 0.95)
 
 
-  expect_equal(nrow(res), 2)
-  expect_equal(ncol(res), 16)
+  expect_equal(length(res), 2)
+  expect_equal(nrow(res$results), 2)
+  expect_equal(ncol(res$results), 16)
+  expect_equal(nrow(res$success), 2)
+  expect_equal(ncol(res$success), 16)
 })

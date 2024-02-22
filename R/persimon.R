@@ -21,8 +21,9 @@
 #' @param nboot Number of bootstrap samples (default is 1000).
 #' @param conf.level Confidence level for the tests (default is 0.95).
 #'
-#' @return A data frame with the proportions of rejecting the null hypothesis for
-#' each test and sample size combination.
+#' @return A list of data frames. One with the proportions of rejecting the null
+#' hypothesis for each test and sample size combination, and the other with the
+#' number of models which did not produce errors for each combination.
 #'
 #' @examples
 #' set.seed(135)
@@ -91,7 +92,7 @@ persimon <- function(M1 = 5, S1 = 1, M2 = 5, S2 = 1, M3 = 5, S3 = 1,
     }, error = function(e) NA)
 
     pft <- tryCatch({
-      lmPerm::aovp(x ~ factor(grp),df)$perm$P[2,1] <= 1 - conf.level
+        lmPerm::aovp(x ~ factor(grp),df, settings = FALSE)$perm$P[2,1] <= 1 - conf.level
     }, error = function(e) NA)
 
     bFbar0 <- tryCatch({
@@ -166,11 +167,29 @@ persimon <- function(M1 = 5, S1 = 1, M2 = 5, S2 = 1, M3 = 5, S3 = 1,
 
     }, error = function(e) NA)
 
-    # Returning a named vector
-    return(c(NPBFT = npbft, ANOV = anov, KW = kw, PFT = pft,
-             bFBAR0 = bFbar0, bFBAR1 = bFbar1, bFBAR2 = bFbar2,
-             rFBAR0 = rFbar0, rFBAR1 = rFbar1, rFBAR2 = rFbar2,
-             rbFBAR0 = rbFbar0, rbFBAR1 = rbFbar1, rbFBAR2 = rbFbar2))
+    # Returning a named list
+    return(
+      list(
+        results = c(NPBFT = npbft, ANOV = anov, KW = kw, PFT = pft,
+                    bFBAR0 = bFbar0, bFBAR1 = bFbar1, bFBAR2 = bFbar2,
+                    rFBAR0 = rFbar0, rFBAR1 = rFbar1, rFBAR2 = rFbar2,
+                    rbFBAR0 = rbFbar0, rbFBAR1 = rbFbar1, rbFBAR2 = rbFbar2),
+        success = c(NPBFT = sum(!is.na(npbft)),
+                    ANOV = sum(!is.na(anov)),
+                    KW = sum(!is.na(kw)),
+                    PFT = sum(!is.na(pft)),
+                    bFBAR0 = sum(!is.na(bFbar0)),
+                    bFBAR1 = sum(!is.na(bFbar1)),
+                    bFBAR2 = sum(!is.na(bFbar2)),
+                    rFBAR0 = sum(!is.na(rFbar0)),
+                    rFBAR1 = sum(!is.na(rFbar1)),
+                    rFBAR2 = sum(!is.na(rFbar2)),
+                    rbFBAR0 = sum(!is.na(rbFbar0)),
+                    rbFBAR1 = sum(!is.na(rbFbar1)),
+                    rbFBAR2 = sum(!is.na(rbFbar2)))
+        )
+    )
+
   }
 
   # Run n_simulations at each sample size pair
@@ -180,7 +199,10 @@ persimon <- function(M1 = 5, S1 = 1, M2 = 5, S2 = 1, M3 = 5, S3 = 1,
 
   # Use lapply to calculate proportions and create a data frame for each sample size combination
   proportions_list <- lapply(seq_along(results), function(i) {
-    proportions <- rowMeans(results[[i]], na.rm = TRUE)
+    proportions <- rowMeans(do.call(cbind,
+                                    lapply(results[[i]][1,],
+                                           function(x) as.matrix(unlist(x)))),
+                            na.rm = TRUE)
     data.frame(
       n1 = n1[i],
       n2 = n2[i],
@@ -201,8 +223,37 @@ persimon <- function(M1 = 5, S1 = 1, M2 = 5, S2 = 1, M3 = 5, S3 = 1,
     )
   })
 
+  # Use lapply to calculate success and create a data frame for each sample size combination
+  success_list <- lapply(seq_along(results), function(i) {
+    counts <- rowSums(do.call(cbind,
+                              lapply(results[[i]][2,],
+                                     function(x) as.matrix(unlist(x)))),
+                      na.rm = TRUE)
+    data.frame(
+      n1 = n1[i],
+      n2 = n2[i],
+      n3 = n3[i],
+      ANOV = counts["ANOV"],
+      KW = counts["KW"],
+      NPBFT = counts["NPBFT"],
+      PFT = counts["PFT"],
+      bFBAR0 = counts["bFBAR0"],
+      bFBAR1 = counts["bFBAR1"],
+      bFBAR2 = counts["bFBAR2"],
+      rFBAR0 = counts["rFBAR0"],
+      rFBAR1 = counts["rFBAR1"],
+      rFBAR2 = counts["rFBAR2"],
+      rbFBAR0 = counts["rbFBAR0"],
+      rbFBAR1 = counts["rbFBAR1"],
+      rbFBAR2 = counts["rbFBAR2"]
+    )
+  })
+
   # Combine the list of data frames into a single data frame
   proportions_df <- do.call(rbind, proportions_list)
+  success_df <- do.call(rbind, success_list)
 
-  return(proportions_df)
+  return(list(results = proportions_df,
+              success = success_df)
+         )
 }
