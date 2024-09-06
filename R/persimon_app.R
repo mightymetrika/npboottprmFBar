@@ -21,6 +21,7 @@ persimon_app <- function(){
         DT::DTOutput("resultsTable"),
         shiny::uiOutput("simulation_success_header"),
         DT::DTOutput("successTable"),
+        DT::DTOutput("expTable")
         # shiny::br(),  # Add a line break
         # shiny::br(),  # Add a line break
         # # Add a header for the responses table
@@ -44,7 +45,7 @@ persimon_app <- function(){
     # Reactive value to store the results
     results <- shiny::reactiveVal(data.frame())     #For display
     success <- shiny::reactiveVal(data.frame())     #For display
-    # results_exp <- shiny::reactiveVal(data.frame()) #For export
+    results_exp <- shiny::reactiveVal(data.frame()) #For export
 
     # Observe event for the run simulation button
     shiny::observeEvent(input$runSim, {
@@ -59,7 +60,7 @@ persimon_app <- function(){
       # Update the results reactive value
       results(simResults$results)
       success(simResults$success)
-      # results_exp(simResults)
+      results_exp(appendInputParams(results(), success(), input))
     })
 
     #Output the results table
@@ -69,6 +70,10 @@ persimon_app <- function(){
 
     output$successTable <- DT::renderDT({
       success()
+    }, options = list(pageLength = 5))
+
+    output$expTable <- DT::renderDT({
+      results_exp()
     }, options = list(pageLength = 5))
 
     # Conditionally display the Simulation Results header
