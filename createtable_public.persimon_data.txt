@@ -1,0 +1,54 @@
+-- Table: public.persimon_data
+
+-- DROP TABLE IF EXISTS public.persimon_data;
+
+CREATE TABLE IF NOT EXISTS public.persimon_data
+(
+    n1 integer,
+    n2 integer,
+    n3 integer,
+    ANOV real,
+    KW real,
+    NPBFT real,
+    PFT real,
+    bFBAR0 real,
+    bFBAR1 real,
+    bFBAR2 real,
+    rFBAR0 real,
+    rFBAR1 real,
+    rFBAR2 real,
+    rbFBAR0 real,
+    rbFBAR1 real,
+    rbFBAR2 real,
+    ANOV_success integer,
+    KW_success integer,
+    NPBFT_success integer,
+    PFT_success integer,
+    bFBAR0_success integer,
+    bFBAR1_success integer,
+    bFBAR2_success integer,
+    rFBAR0_success integer,
+    rFBAR1_success integer,
+    rFBAR2_success integer,
+    rbFBAR0_success integer,
+    rbFBAR1_success integer,
+    rbFBAR2_success integer,
+    M1 integer,
+    S1 integer,
+    M2 integer,
+    S2 integer,
+    M3 integer,
+    S3 integer,
+    Sk1 real,
+    Sk2 real,
+    Sk3 real,
+    n_simulations integer,
+    nboot integer,
+    conf_level real,
+    RunCode text COLLATE pg_catalog."default"
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.persimon_data
+    OWNER to postgres;
