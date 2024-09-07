@@ -6,9 +6,9 @@ getUIParams <- function() {
        shiny::numericInput("S2", "Standard deviation for the second group:", 1),
        shiny::numericInput("M3", "Mean for the third group:", 5),
        shiny::numericInput("S3", "Standard deviation for the third group:", 1),
-       shiny::numericInput("Sk1", "Skew for the first group:", value = NA),
-       shiny::numericInput("Sk2", "Skew for the second group:", value = NA),
-       shiny::numericInput("Sk3", "Skew for the third group:", value = NA),
+       shiny::numericInput("Sk1", "Skew for the first group:", value = NA_real_),
+       shiny::numericInput("Sk2", "Skew for the second group:", value = NA_real_),
+       shiny::numericInput("Sk3", "Skew for the third group:", value = NA_real_),
        shiny::textInput("n1", "Sample sizes for the first group:", "5"),
        shiny::textInput("n2", "Sample sizes for the second group:", "5"),
        shiny::textInput("n3", "Sample sizes for the third group:", "5"),
@@ -51,10 +51,9 @@ appendInputParams <- function(df_results, df_success, input) {
     params_df <- data.frame(
       M1 = input$M1, S1 = input$S1, M2 = input$M2, S2 = input$S2,
       M3 = input$M3, S3 = input$S3,
-      Sk1 = input$Sk1, Sk2 = input$Sk2,
-      Sk3 = input$Sk3,
+      Sk1 = input$Sk1, Sk2 = input$Sk2, Sk3 = input$Sk3,
       n_simulations = input$n_simulations, nboot = input$nboot,
-      conf.level = input$conf.level,
+      conf_level = input$conf.level,
       RunCode = run_code, stringsAsFactors = FALSE
     )
 

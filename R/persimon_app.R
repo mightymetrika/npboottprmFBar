@@ -1,18 +1,16 @@
-persimon_app <- function(){
+persimon_app <- function(dbname, datatable, host, port, user, password){
 
   # Define the UI
   ui <- shiny::fluidPage(
     shiny::titlePanel("bootFbar Persimon"),
     shiny::sidebarLayout(
       shiny::sidebarPanel(
-        # shiny::selectInput("cellBlock", "Select Cell Block:",
-        #                    choices = getCellBlocks()),
         shiny::uiOutput("paramsUI"),
         shiny::actionButton("runSim", "Run Simulation"),
-        # shiny::actionButton("submit", "Submit"),
-        # shiny::br(),  # Add a line break
-        # shiny::br(),  # Add a line break
-        # shiny::downloadButton("downloadBtn", "Download Responses"),
+        mmints::postgresUI("postgres")$submit,
+        shiny::br(), shiny::br(), # Add a line break
+        mmints::postgresUI("postgres")$download,
+        # shiny::br(), shiny::br(), # Add a line break
         mmints::citationUI("citations")$button
       ),
       shiny::mainPanel(
@@ -21,15 +19,10 @@ persimon_app <- function(){
         DT::DTOutput("resultsTable"),
         shiny::uiOutput("simulation_success_header"),
         DT::DTOutput("successTable"),
-        DT::DTOutput("expTable"),
-        # shiny::br(),  # Add a line break
-        # shiny::br(),  # Add a line break
-        # # Add a header for the responses table
-        # shiny::div(
-        #   shiny::h4("All Responses"),
-        #   DT::DTOutput("responses")
-        # ),
-        # shiny::uiOutput("citation_header"),
+        shiny::br(),  # Add a line break
+        shiny::br(),  # Add a line break
+        shiny::h4("Database Content:"),
+        mmints::postgresUI("postgres")$table,
         mmints::citationUI("citations")$output
       )
     )
@@ -41,6 +34,26 @@ persimon_app <- function(){
     output$paramsUI <- shiny::renderUI({
       getUIParams()
     })
+
+    # Get database connection details from environment variables
+    # db_config <- list(
+    #   dbname = Sys.getenv("DBNAME"),
+    #   datatable = Sys.getenv("DATATABLE"),
+    #   host = Sys.getenv("HOST"),
+    #   port = as.integer(Sys.getenv("PORT")),
+    #   user = Sys.getenv("USER"),
+    #   password = Sys.getenv("PASSWORD")
+    # )
+
+    # Initialize the postgres module
+    postgres_module <- mmints::postgresServer("postgres",
+                                              dbname = dbname,
+                                              datatable = datatable,
+                                              host = host,
+                                              port = port,
+                                              user = user,
+                                              password = password,
+                                              data = NULL)
 
     # Reactive value to store the results
     results <- shiny::reactiveVal(data.frame())     #For display
@@ -61,6 +74,7 @@ persimon_app <- function(){
       results(simResults$results)
       success(simResults$success)
       results_exp(appendInputParams(results(), success(), input))
+      postgres_module$data_to_submit(results_exp())
     })
 
     #Output the results table
