@@ -35,16 +35,6 @@ persimon_app <- function(dbname, datatable, host, port, user, password){
       getUIParams()
     })
 
-    # Get database connection details from environment variables
-    # db_config <- list(
-    #   dbname = Sys.getenv("DBNAME"),
-    #   datatable = Sys.getenv("DATATABLE"),
-    #   host = Sys.getenv("HOST"),
-    #   port = as.integer(Sys.getenv("PORT")),
-    #   user = Sys.getenv("USER"),
-    #   password = Sys.getenv("PASSWORD")
-    # )
-
     # Initialize the postgres module
     postgres_module <- mmints::postgresServer("postgres",
                                               dbname = dbname,
