@@ -13,7 +13,7 @@ persimon_app <- function(){
         # shiny::br(),  # Add a line break
         # shiny::br(),  # Add a line break
         # shiny::downloadButton("downloadBtn", "Download Responses"),
-        # shiny::actionButton("show_citations", "Citations")
+        mmints::citationUI("citations")$button
       ),
       shiny::mainPanel(
         # # Conditionally display the Simulation Results header and table
@@ -21,7 +21,7 @@ persimon_app <- function(){
         DT::DTOutput("resultsTable"),
         shiny::uiOutput("simulation_success_header"),
         DT::DTOutput("successTable"),
-        DT::DTOutput("expTable")
+        DT::DTOutput("expTable"),
         # shiny::br(),  # Add a line break
         # shiny::br(),  # Add a line break
         # # Add a header for the responses table
@@ -30,7 +30,7 @@ persimon_app <- function(){
         #   DT::DTOutput("responses")
         # ),
         # shiny::uiOutput("citation_header"),
-        # shiny::verbatimTextOutput("citations_output")
+        mmints::citationUI("citations")$output
       )
     )
   )
@@ -92,6 +92,17 @@ persimon_app <- function(){
         NULL
       }
     })
+
+    # build citation list
+    citations <- list(
+      "Nonparametric Bootstrap Test with Pooled Resampling Method:" = "Dwivedi, A. K., Mallawaarachchi, I., & Alvarado, L. A. (2017). Analysis of small sample size studies using nonparametric bootstrap test with pooled resampling method. Statistics in Medicine, 36(14), 2187-2205. https://doi.org/10.1002/sim.7263",
+      "Software Implementing Nonparametric Bootstrap Test with Pooled Resampling:" = function() mmints::format_citation(utils::citation("npboottprm")),
+      "Informative Hypothesis Testing Method:" = "Vanbrabant, L., & Rosseel, Y. (2020). An Introduction to Restriktor: Evaluating informative hypotheses for linear models. In R. van de Schoot & M. Miocevic (Eds.), Small Sample Size Solutions: A Guide for Applied Researchers and Practitioners (1st ed., pp. 157 -172). Routledge. https://doi.org/10.4324/9780429273872-14",
+      "Software Implementing Informative Hypothesis Testing:" = function() mmints::format_citation(utils::citation("restriktor"))
+    )
+
+    # create citation for display
+    mmints::citationServer("citations", citations)
   }
 
   # Run the application

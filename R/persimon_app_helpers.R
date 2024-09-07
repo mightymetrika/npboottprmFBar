@@ -21,12 +21,15 @@ getUIParams <- function() {
 runSimulation <- function(input) {
 
 
-  persimon(M1 = input$M1, S1 = input$S1, M2 = input$M2, S2 = input$S2,
+  persimon(M1 = input$M1, S1 = input$S1,
+           M2 = input$M2, S2 = input$S2,
            M3 = input$M3, S3 = input$S3,
-           Sk1 = vec_null(input$Sk1), Sk2 = vec_null(input$Sk2),
-           Sk3 = vec_null(input$Sk3),
-           n1 = text_to_vector(input$n1), n2 = text_to_vector(input$n2),
-           n3 = text_to_vector(input$n3),
+           Sk1 = mmints::vec_null(input$Sk1),
+           Sk2 = mmints::vec_null(input$Sk2),
+           Sk3 = mmints::vec_null(input$Sk3),
+           n1 = mmints::text_to_vector(input$n1),
+           n2 = mmints::text_to_vector(input$n2),
+           n3 = mmints::text_to_vector(input$n3),
            n_simulations = input$n_simulations, nboot = input$nboot,
            conf.level = input$conf.level)
 
@@ -42,7 +45,7 @@ appendInputParams <- function(df_results, df_success, input) {
   df <- cbind(df_results, df_success)
 
   # Generate a unique code for the simulation run
-  run_code <- generateRunCode()
+  run_code <- mmints::generateRunCode()
 
   # Create a data frame of input parameters
     params_df <- data.frame(
@@ -60,36 +63,4 @@ appendInputParams <- function(df_results, df_success, input) {
 
   # Combine with the simulation results
   cbind(df, params_df)
-}
-
-# mmints functions
-text_to_vector <- function(text_input) {
-  # Check if the input is a simple comma-separated string
-  if (!grepl("^[^,]+$", text_input) && !grepl("[()]", text_input)) {
-    text_input <- paste0("c(", text_input, ")")
-  }
-  eval(parse(text = text_input))
-}
-
-vec_null <- function(par_input = "", alt_na = NULL) {
-  if (is.na(par_input) || par_input == "") {
-    return(NULL)
-  } else if (!is.null(alt_na)){
-    if(par_input == alt_na) return (NULL)
-  } else {
-    return(text_to_vector(par_input))
-  }
-}
-
-generateRunCode <- function(time_format = "%Y%m%d%H%M%S", string_length = 5) {
-
-  # generate time stamp
-  timestamp <- format(Sys.time(), time_format)
-
-  # generate random string of letters
-  random_string <- paste(sample(c(letters, LETTERS, 0:9),
-                                string_length, replace = TRUE), collapse = "")
-
-  # paste pieces
-  paste0(timestamp, "_", random_string)
 }
