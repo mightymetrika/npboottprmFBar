@@ -21,12 +21,11 @@ You can install the released version of ‘npboottprmFBar’ from
 install.packages("npboottprmFBar")
 ```
 
-To install the development version of ‘npboottprmFBar’ from GitHub, use
-the [devtools](https://devtools.r-lib.org/) package:
+To install the development version of ‘npboottprmFBar’ from GitHub:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("mightymetrika/npboottprmFBar")
+# install.packages("pak")
+pak::pak("mightymetrika/npboottprmFBar")
 ```
 
 ## An iris example
@@ -61,4 +60,3 @@ Vanbrabant, L., & Rosseel, Y. (2020). An Introduction to Restriktor:
 Evaluating informative hypotheses for linear models. In R. van de Schoot
 & M. Miocevic (Eds.), Small Sample Size Solutions: A Guide for Applied
 Researchers and Practitioners (1st ed., pp. 157 -172). Routledge.
-<https://doi.org/10.4324/9780429273872-14>
