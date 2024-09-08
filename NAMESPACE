@@ -2,4 +2,5 @@
 
 export(bootFbar)
 export(persimon)
+export(persimon_app)
 importFrom(lmPerm,lmp)

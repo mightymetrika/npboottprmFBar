@@ -1,6 +1,54 @@
+#' Run Shiny Application for bootFbar Performance Simulation
+#'
+#' This function launches a 'shiny' application that allows users to run
+#' performance simulations for the bootFbar method and other statistical tests.
+#' The app provides an interface to set simulation parameters, run simulations,
+#' view results, and store them in a 'PostgreSQL' database.
+#'
+#' @param dbname A string specifying the name of the 'PostgreSQL' database to
+#' connect to.
+#' @param datatable A string specifying the name of the table in the database
+#' where results will be stored.
+#' @param host A string specifying the host name or IP address of the 'PostgreSQL'
+#' server.
+#' @param port An integer specifying the port number on which the 'PostgreSQL'
+#' server is listening.
+#' @param user A string specifying the username for the 'PostgreSQL' database
+#' connection.
+#' @param password A string specifying the password for the 'PostgreSQL'
+#' database connection.
+#'
+#' @return A 'shiny' application object.
+#'
+#' @details
+#' The 'shiny' application provides a user interface for setting simulation
+#' parameters, running simulations using the `persimon` function, and visualizing
+#' the results. It allows users to:
+#'
+#' - Set parameters for the simulation (means, standard deviations, sample sizes, etc.)
+#' - Run simulations with the specified parameters
+#' - View simulation results and success rates in interactive tables
+#' - Store simulation results in a PostgreSQL database
+#' - Download stored results from the database
+#' - View relevant citations for the methods used
+#'
+#' The application uses the `mmints` package for database interactions and
+#' citation handling.
+#'
+#' @examples
+#' if(interactive()){
+#' persimon_app(dbname = "my_database", datatable = "simulation_results",
+#'              host = "localhost", port = 5432,
+#'              user = "username", password = "password")
+#' }
+#'
+#' @seealso
+#' \code{\link{persimon}} for the underlying simulation function.
+#'
+#' @export
 persimon_app <- function(dbname, datatable, host, port, user, password){
 
-  # Define the UI
+  # define the UI
   ui <- shiny::fluidPage(
     shiny::titlePanel("bootFbar Persimon"),
     shiny::sidebarLayout(
@@ -10,17 +58,15 @@ persimon_app <- function(dbname, datatable, host, port, user, password){
         mmints::postgresUI("postgres")$submit,
         shiny::br(), shiny::br(), # Add a line break
         mmints::postgresUI("postgres")$download,
-        # shiny::br(), shiny::br(), # Add a line break
         mmints::citationUI("citations")$button
       ),
       shiny::mainPanel(
-        # # Conditionally display the Simulation Results header and table
         shiny::uiOutput("simulation_results_header"),
         DT::DTOutput("resultsTable"),
+        shiny::br(), shiny::br(), # Add a line break
         shiny::uiOutput("simulation_success_header"),
         DT::DTOutput("successTable"),
-        shiny::br(),  # Add a line break
-        shiny::br(),  # Add a line break
+        shiny::br(), shiny::br(), # Add a line break
         shiny::h4("Database Content:"),
         mmints::postgresUI("postgres")$table,
         mmints::citationUI("citations")$output
@@ -30,12 +76,12 @@ persimon_app <- function(dbname, datatable, host, port, user, password){
 
   server <- function(input, output, session) {
 
-    # Render the UI for parameters
+    # render the UI for parameters
     output$paramsUI <- shiny::renderUI({
       getUIParams()
     })
 
-    # Initialize the postgres module
+    # initialize the postgres module
     postgres_module <- mmints::postgresServer("postgres",
                                               dbname = dbname,
                                               datatable = datatable,
@@ -45,42 +91,41 @@ persimon_app <- function(dbname, datatable, host, port, user, password){
                                               password = password,
                                               data = NULL)
 
-    # Reactive value to store the results
+    # reactive value to store the results
     results <- shiny::reactiveVal(data.frame())     #For display
     success <- shiny::reactiveVal(data.frame())     #For display
     results_exp <- shiny::reactiveVal(data.frame()) #For export
 
-    # Observe event for the run simulation button
+    # observe event for the run simulation button
     shiny::observeEvent(input$runSim, {
 
       # make sure responses are clear
       results(data.frame())
       success(data.frame())
 
-      # Call the simulation function with both user-provided and default parameters
+      # call the simulation function with both user-provided and default parameters
       simResults <- runSimulation(input)
 
-      # Update the results reactive value
+      # update the results, success, and results_exp reactive values
       results(simResults$results)
       success(simResults$success)
       results_exp(appendInputParams(results(), success(), input))
+
+      # submit results to database
       postgres_module$data_to_submit(results_exp())
     })
 
-    #Output the results table
+    # render the results table
     output$resultsTable <- DT::renderDT({
       results()
     }, options = list(pageLength = 5))
 
+    # render the success table
     output$successTable <- DT::renderDT({
       success()
     }, options = list(pageLength = 5))
 
-    output$expTable <- DT::renderDT({
-      results_exp()
-    }, options = list(pageLength = 5))
-
-    # Conditionally display the Simulation Results header
+    # conditionally display the simulation results header
     output$simulation_results_header <- shiny::renderUI({
       if (nrow(results()) > 0) {
         shiny::h4("Simulation Results")
@@ -89,6 +134,7 @@ persimon_app <- function(dbname, datatable, host, port, user, password){
       }
     })
 
+    # conditionally display the simulation success header
     output$simulation_success_header <- shiny::renderUI({
       if (nrow(success()) > 0) {
         shiny::h4("Simulation Success")
